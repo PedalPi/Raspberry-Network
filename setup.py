@@ -26,7 +26,7 @@ setup(
     name='PedalPi-Raspberry-Network',
     version='0.2.0',
 
-    description='Network and led',
+    description='Enable/disable wireless and informs network usage with a led',
     #long_description=readme(),
 
     url='https://github.com/PedalPi/Raspberry-Network',
