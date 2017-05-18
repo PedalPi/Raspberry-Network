@@ -12,21 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from gpiozero import LED
+from gpiozero.pins.mock import MockPin
+
+from application.component.component import Component
+
 from raspberry_network.network_monitor import NetworkMonitor
 
 
-class RaspberryNetwork(object):
+class RaspberryNetwork(Component):
 
-    def __init__(self, time=1.0, interface="eth0"):
+    def __init__(self, application, time=1.0, interface="eth0", pin_led=7, test=False):
+        super(RaspberryNetwork, self).__init__(application)
+        
         self.monitor = NetworkMonitor(time, interface)
-        self.monitor.when_change = lambda value: self.blink(value)
+        self.monitor.when_change = lambda value: self.blink()
+        
+        if test:
+            pin_led = MockPin(pin_led)
 
-    def start(self):
+        self.led = LED(pin_led)
+
+    def init(self):
         self.monitor.start()
 
-    def blink(self, value):
-        print('Update network', value)
+    def close(self):
+        self.monitor.stop()
+
+    def blink(self):
+        self.led.blink(on_time=1/30, off_time=1/30, n=1)
 
 
 if __name__ == '__main__':
-    RaspberryNetwork(1/15, 'wlp3s0').start()
+    RaspberryNetwork(None, time=1/15, interface='wlp3s0').init()
